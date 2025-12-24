@@ -1,6 +1,7 @@
 import { createLogger, format, Logform, transports } from 'winston';
 import path from 'path';
 import fs from 'fs';
+import { jsonReplacer } from '../utils/json-replacer.util';
 
 const colorize = format.colorize({
   all: true,
@@ -13,15 +14,15 @@ const colorize = format.colorize({
 });
 
 const defaultFormat = format.combine(
-    format.timestamp({
-      format: 'YY-MM-DD HH:mm:ss.SSS',
-    }),
-    format.printf((info: Logform.TransformableInfo) => {
-      const { level, timestamp, message, ...rest } = info;
-      const formattedRest = rest ? ` ${JSON.stringify(rest)}` : '';
-      return `[${timestamp}  [${level}]:  ${message}  ${formattedRest}`;
-    }),
-  );
+  format.timestamp({
+    format: 'YY-MM-DD HH:mm:ss.SSS',
+  }),
+  format.printf((info: Logform.TransformableInfo) => {
+    const { level, timestamp, message, ...rest } = info;
+    const formattedRest = rest ? ` ${JSON.stringify(rest, jsonReplacer)}` : '';
+    return `[${timestamp}  [${level}]:  ${message}  ${formattedRest}`;
+  }),
+);
 
 const logger = createLogger({
   transports: [
@@ -50,4 +51,3 @@ if (!fs.existsSync(logsDir)) {
 }
 
 export default logger;
-

@@ -24,20 +24,15 @@ yarn install
 
 Create a `.env` file in the root directory:
 
-```env
+````env
 # Database
 DATABASE_URL="mysql://user:password@localhost:3306/dbname"
 
 # JWT Secret
 JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
-JWT_EXPIRES_IN="7d"
 
 # Server
 PORT=3000
-
-# Logging
-LOG_LEVEL="info"
-```
 
 Replace the `DATABASE_URL` with your MySQL connection string and set a strong `JWT_SECRET`.
 
@@ -47,7 +42,7 @@ Generate Prisma Client:
 
 ```bash
 yarn prisma:generate
-```
+````
 
 Run migrations to create the database schema:
 

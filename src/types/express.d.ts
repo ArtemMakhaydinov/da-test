@@ -1,16 +1,12 @@
-import { User } from '@prisma/client';
+import { User as PrismaUser } from '@prisma/client';
 
-declare global {
+export declare global {
   namespace Express {
+    interface User extends PrismaUser {}
     interface Request {
-      user?: {
-        id: number;
-        email: string;
-        name: string | null;
-      };
+      jwtRefreshId?: number;
     }
   }
 }
 
 export {};
-

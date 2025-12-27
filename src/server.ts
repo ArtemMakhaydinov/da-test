@@ -9,6 +9,7 @@ import { logRequest } from './middlewares/logger.middleware';
 import { errorHandler } from './middlewares/error.middleware';
 import { routeNotFound } from './routes/route-not-found.routes';
 import prisma from './config/database.config';
+import fileRoutes from './routes/file.routes';
 
 const bootstrap = async (): Promise<void> => {
   const app = express();
@@ -21,6 +22,7 @@ const bootstrap = async (): Promise<void> => {
 
   app.use(rootRoutes);
   app.use('/api', authRoutes);
+  app.use('/api/file', fileRoutes);
 
   app.use(errorHandler);
   app.use(routeNotFound);

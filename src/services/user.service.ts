@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User } from '../../generated/prisma/client';
 import prisma from '../config/database.config';
 import logger from '../config/logger.confg';
 import { encryptPassword } from '../utils/password-encryptor.util';

@@ -7,7 +7,7 @@ const adapter = new PrismaMariaDb({
   host: getEnv('DATABASE_HOST'),
   port: Number(getEnv('DATABASE_PORT')),
   user: getEnv('DATABASE_USER'),
-  password: getEnv('DATABASE_PASSWORD'),
+  password: getEnv('DATABASE_PASSWORD', { isOptional: true }),
   database: getEnv('DATABASE_NAME'),
   connectionLimit: 5,
 });

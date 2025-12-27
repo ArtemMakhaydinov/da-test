@@ -1,5 +1,4 @@
 import { createUser, getUserByLogin } from '../services/user.service';
-import { LoginRequest, RefreshTokenRequest, RegisterRequest } from './types/auth.types';
 import { Request, Response } from 'express';
 import logger from '../config/logger.confg';
 import { verifyPassword } from '../utils/password-encryptor.util';
@@ -10,7 +9,10 @@ import {
   deleteJwtRefreshByToken,
 } from '../services/jwt-refresh.service';
 
-export const signup = async (req: RegisterRequest, res: Response): Promise<void> => {
+export const signup = async (
+  req: Request<unknown, unknown, { login: string; password: string }>,
+  res: Response,
+): Promise<void> => {
   try {
     const { login, password } = req.body;
     if (!login || !password) {
@@ -44,7 +46,10 @@ export const signup = async (req: RegisterRequest, res: Response): Promise<void>
   }
 };
 
-export const signin = async (req: LoginRequest, res: Response): Promise<void> => {
+export const signin = async (
+  req: Request<unknown, unknown, { login: string; password: string }>,
+  res: Response,
+): Promise<void> => {
   try {
     const { login, password } = req.body;
     if (!login || !password) {
@@ -85,7 +90,10 @@ export const signin = async (req: LoginRequest, res: Response): Promise<void> =>
   }
 };
 
-export const refreshToken = async (req: RefreshTokenRequest, res: Response): Promise<void> => {
+export const refreshToken = async (
+  req: Request<unknown, unknown, { refreshToken: string }>,
+  res: Response,
+): Promise<void> => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import logger from '../config/logger.confg';
-import { JwtRefresh, User } from '@prisma/client';
+import { JwtRefresh, User } from '../../generated/prisma/client';
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   passport.authenticate(

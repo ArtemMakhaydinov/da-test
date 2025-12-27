@@ -1,4 +1,4 @@
-import { JwtRefresh } from '@prisma/client';
+import { JwtRefresh } from '../../generated/prisma/client';
 import prisma from '../config/database.config';
 import logger from '../config/logger.confg';
 

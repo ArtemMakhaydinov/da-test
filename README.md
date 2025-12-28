@@ -1,16 +1,18 @@
-# Express App with JWT Authentication
+# Express App with JWT Authentication and File Management
 
-Express.js application with TypeScript, JWT authentication, CORS enabled for all domains, and MySQL database using Prisma ORM.
+Express.js application with TypeScript, JWT authentication, file upload/download functionality, CORS enabled for all domains, and MySQL database using Prisma ORM.
 
 ## Features
 
-- 🔐 JWT-based authentication (register, login)
+- 🔐 JWT-based authentication (signup, signin, refresh token, logout)
+- 📁 File upload, download, update, and delete functionality
 - 🌐 CORS configured to allow access from any domain
 - 🗄️ MySQL database with Prisma ORM
 - 🔒 Protected routes with JWT middleware
 - 🛡️ Password hashing with bcryptjs
 - 📝 TypeScript for type safety
 - 📊 Winston logger for structured logging
+- 🔄 Refresh token rotation for enhanced security
 
 ## Setup
 
@@ -24,30 +26,47 @@ yarn install
 
 Create a `.env` file in the root directory:
 
-````env
+```env
 # Database
-DATABASE_URL="mysql://user:password@localhost:3306/dbname"
+DATABASE_URL="mysql://root:@0.0.0.0:3306/da_test"
+DATABASE_HOST="localhost"
+DATABASE_PORT="3306"
+DATABASE_USER="root"
+DATABASE_PASSWORD=""  # Optional, can be omitted if no password is set
+DATABASE_NAME="dbname"
 
-# JWT Secret
+# JWT
 JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+JWT_EXPIRES_IN_SEC=600
 
 # Server
 PORT=3000
 
-Replace the `DATABASE_URL` with your MySQL connection string and set a strong `JWT_SECRET`.
+# Security
+PW_SECRET="super-secret-password-encryption-key-change-this-in-production"
+
+```
+
+Replace the database connection details with your MySQL/MariaDB credentials and set strong `JWT_SECRET` and `PW_SECRET`.
 
 ### 3. Set Up Database
 
-Generate Prisma Client:
+For the local development set up MySQL database in the container (it will set user, password and database name according to `.env.sample`):
 
 ```bash
-yarn prisma:generate
-````
+docker compose -f docker-compose.dev.yml up
+```
 
 Run migrations to create the database schema:
 
 ```bash
-yarn prisma:migrate
+yarn prisma-migrate-deploy
+```
+
+Generate Prisma Client:
+
+```bash
+yarn prisma-generate
 ```
 
 ### 4. Start the Server
@@ -55,13 +74,13 @@ yarn prisma:migrate
 **Development mode** (with hot reload):
 
 ```bash
-yarn dev
+yarn start:dev
 ```
 
 **Production mode** (build first, then run):
 
 ```bash
-yarn build
+yarn nest build
 yarn start
 ```
 
@@ -71,89 +90,28 @@ The server will start on `http://localhost:3000` (or the port specified in your 
 
 ### Public Routes
 
-- `GET /` - API information
-- `POST /api/auth/register` - Register a new user
-  ```json
-  {
-    "email": "user@example.com",
-    "password": "password123",
-    "name": "John Doe" // optional
-  }
-  ```
-- `POST /api/auth/login` - Login
-  ```json
-  {
-    "email": "user@example.com",
-    "password": "password123"
-  }
-  ```
+- `GET /` - API information and endpoint documentation
 
-### Protected Routes (require JWT token)
+**Authentication:**
 
-Include the token in the Authorization header: `Authorization: Bearer <token>`
+- `POST /api/auth/signup` - Register a new user (body: `{ login, password }`)
+- `POST /api/auth/signin` - Login user (body: `{ login, password }`)
+- `POST /api/auth/signin/refresh_token` - Refresh access token (body: `{ refreshToken }`)
 
-- `GET /api/auth/me` - Get current user info
-- `GET /api/protected/profile` - Example protected route
-- `GET /api/protected/data` - Another example protected route
+### Protected Routes
 
-## Example Usage
+Include the token in the Authorization header: `Authorization: Bearer <accessToken>`
 
-### Register a User
+**Authentication:**
 
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","name":"Test User"}'
-```
+- `GET /api/auth/info` - Get current user information
+- `GET /api/auth/logout` - Logout user and invalidate refresh token
 
-### Login
+**File Management:**
 
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
-```
-
-### Access Protected Route
-
-```bash
-curl -X GET http://localhost:3000/api/protected/profile \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
-
-## Project Structure
-
-```
-.
-├── prisma/
-│   └── schema.prisma          # Prisma schema with User model
-├── src/
-│   ├── config/
-│   │   ├── database.ts        # Prisma client configuration
-│   │   └── logger.ts          # Winston logger configuration
-│   ├── middleware/
-│   │   └── auth.ts            # JWT authentication middleware
-│   ├── routes/
-│   │   ├── auth.ts            # Authentication routes
-│   │   └── protected.ts       # Protected routes examples
-│   ├── types/
-│   │   └── express.d.ts       # Express type extensions
-│   └── server.ts              # Main server file
-├── dist/                      # Compiled JavaScript (generated)
-├── logs/                      # Log files (generated)
-├── .env                       # Environment variables (create this)
-├── .env.sample                # Environment variables template
-├── .gitignore
-├── package.json
-├── tsconfig.json              # TypeScript configuration
-└── README.md
-```
-
-## Scripts
-
-- `yarn dev` - Start the development server with hot reload (using tsx)
-- `yarn build` - Compile TypeScript to JavaScript
-- `yarn start` - Run the compiled JavaScript (production)
-- `yarn prisma:generate` - Generate Prisma Client
-- `yarn prisma:migrate` - Run database migrations
-- `yarn prisma:studio` - Open Prisma Studio (database GUI)
+- `POST /api/file/upload` - Upload a new file (header: `x-filename`, body: file stream)
+- `GET /api/file/list` - List files with pagination (query: `page`, `limit`)
+- `GET /api/file/:id` - Get file metadata by ID
+- `PUT /api/file/update/:id` - Update a file by ID (header: `x-filename` optional, body: file stream optional)
+- `DELETE /api/file/:id` - Delete a file by ID
+- `GET /api/file/download/:id` - Download a file by ID

@@ -6,8 +6,7 @@ services:
             - "3306:3306"
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-            MYSQL_USER: "user"
-            MYSQL_PASSWORD: "123ABCabc!"
+            MYSQL_ROOT_PASSWORD:
             MYSQL_DATABASE: "da_test"
         healthcheck:
             test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]

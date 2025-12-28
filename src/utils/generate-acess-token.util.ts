@@ -7,6 +7,10 @@ export const generateAccessToken = async (
 ): Promise<string> => {
   const expiresIn = Number(getEnv('JWT_EXPIRES_IN_SEC'));
   const secret = getEnv('JWT_SECRET');
+  if (!secret) {
+    throw new Error('JWT_SECRET is not set');
+  }
+
   return jwt.sign({ jwtRefreshId }, secret, {
     subject: userId.toString(),
     expiresIn,

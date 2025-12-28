@@ -20,9 +20,9 @@ const bootstrap = async (): Promise<void> => {
 
   app.use(logRequest);
 
-  app.use('/api/file', fileRoutes);
   app.use(rootRoutes);
   app.use('/api', authRoutes);
+  app.use('/api/file', fileRoutes);
 
   app.use(errorHandler);
   app.use(routeNotFound);
